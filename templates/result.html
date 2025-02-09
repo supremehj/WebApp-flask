@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000; /* black color */
+            color: #fff;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .navbar h1 {
+            font-size: 17px;
+        }
+
+        .result-content {
+            padding: 20px;
+            text-align: center;
+            margin-top: 70px; /* Adjust the margin as needed */
+        }
+
+        h1 {
+            font-size: 28px;
+        }
+
+        .result {
+            font-size: 24px;
+            margin-top: 20px;
+        }
+
+        .button {
+            display: inline-block;
+            width: 200px;
+            padding: 10px;
+            margin: 20px;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .button:hover {
+            background-color: #45a049;
+        }
+
+        .details-section {
+            display: none; /* Initially hidden */
+            text-align: left;
+            margin: 20px auto;
+            padding: 15px;
+            border: 1px solid #fff; /* White border */
+            border-radius: 5px;
+            background-color: #f2f2f2; /* Light grey background */
+            color: #000; /* Black text color */
+            max-width: 600px; /* Adjust width as needed */
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.5); /* Optional: Adds a shadow effect */
+            font-family: 'Bradley Hand', Cursive, cursive;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+
+        .chart-container {
+            position: relative;
+            height: 40vh;
+            width: 80vw;
+            margin: 20px auto;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: -1; /* Set z-index to -1 to place it behind other elements */
+        }
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <title>Malware Detection Mobile Application - Result</title>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <nav class="navbar">
+        <h1>Malware Detection Android Application</h1>
+    </nav>
+
+    <div class="result-content">
+        <h1>Malware Detection Result</h1>
+        <div class="result">
+            <p>The APK file is classified as: {{ result }}</p>
+        </div>
+
+        <a href="/" class="button">Search for a New File</a>
+        <button onclick="toggleDetails()" class="button">See Details</button>
+
+        <div id="detailsSection" class="details-section">
+            <p>Time of Upload: {{ upload_time }}</p>
+            <p>Name of APK File: {{ apk_name }}</p>
+            <p>Permissions Extracted: {{ permissions }}</p>
+            <p>{{ malware_status_message }}</p>
+
+            <!-- Pie Chart for Permissions -->
+            <div class="chart-container">
+                <canvas id="permissionsPieChart"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Made by: Hamza Jamil, Kashif Hussain
+    </footer>
+
+    <script>
+        function toggleDetails() {
+            var detailsSection = document.getElementById("detailsSection");
+            if (detailsSection.style.display === "none") {
+                detailsSection.style.display = "block";
+            } else {
+                detailsSection.style.display = "none";
+            }
+        }
+
+        // JavaScript to render a pie chart using Chart.js
+        var ctx = document.getElementById('permissionsPieChart').getContext('2d');
+        var permissionsPieChart = new Chart(ctx, {
+            type: 'pie',
+            data: {
+                labels: {{ permissions | tojson }}, // Replace with your permissions data
+                datasets: [{
+                    label: 'Permission Usage',
+                    data: {{ permission_counts | tojson }}, // Replace with your permission counts data
+                    backgroundColor: [
+                        'rgba(255, 99, 132, 0.5)',
+                        'rgba(54, 162, 235, 0.5)',
+                        // ... add more colors as needed
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false
+            }
+        });
+    </script>
+
+    <!-- Include Particle.js script files here -->
+    <script src="{{ url_for('static', filename='particles.js') }}"></script>
+
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

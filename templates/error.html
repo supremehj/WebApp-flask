@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #1e4375; /* Dark Blue color */
+            color: #fff;
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .navbar h1 {
+            font-size: 17px;
+        }
+
+        .error-content {
+            padding: 20px;
+            text-align: center;
+            margin-top: 70px; /* Adjust the margin as needed */
+        }
+
+        h1 {
+            font-size: 28px;
+        }
+
+        .error-message {
+            font-size: 24px;
+            margin-top: 20px;
+            color: #ff6666; /* Red color for error messages */
+        }
+
+        .search-new-file {
+            display: block;
+            width: 200px;
+            padding: 10px;
+            margin: 20px auto;
+            background-color: #4CAF50; /* Green */
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+        }
+
+        .search-new-file:hover {
+            background-color: #45a049;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+        }
+    </style>
+    <title>Error - Malware Detection Web Application</title>
+</head>
+<body>
+    <nav class="navbar">
+        <h1>Malware Detection Web Application</h1>
+    </nav>
+
+    <div class="error-content">
+        <h1>Error</h1>
+        <div class="error-message">
+            <p>{{ message }}</p>
+        </div>
+        <!-- Button to search for a new file -->
+        <a href="/" class="search-new-file">Search for a New File</a>
+    </div>
+
+    <footer>
+        Made by: Hamza Jamil, Kashif Hussain
+    </footer>
+</body>
+</html>

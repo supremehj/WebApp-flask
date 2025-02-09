@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+            background-color: #000; /* black color */
+        }
+
+        #particles-js {
+            position: fixed;
+            width: 100%;
+            height: 100%;
+            top: 0;
+            left: 0;
+            z-index: -1; /* Ensure it stays in the background */
+        }
+
+        .navbar {
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            text-align: center;
+            z-index: 1;
+        }
+
+        .navbar h1 {
+            font-size: 16px;
+        }
+
+        .logo {
+            text-align: center;
+            position: relative;
+            z-index: 1;
+        }
+
+        .logo img {
+            width: 330px;
+            margin-top: 80px;
+            transition: transform 1s;
+            animation: rotateYAxis 10s infinite linear;
+        }
+
+        @keyframes rotateYAxis {
+            from {
+                transform: rotateY(0deg);
+            }
+            to {
+                transform: rotateY(360deg);
+            }
+        }
+
+        .page-content {
+            position: relative;
+            z-index: 1;
+            min-height: 100vh;
+            padding: 10px 20px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 28px;
+            margin-top: 20px;
+        }
+
+        .upload-form {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2);
+        }
+
+        .button {
+            display: inline-block;
+            width: 200px;
+            padding: 10px;
+            margin: 20px;
+            background-color: #3498db;
+            color: white;
+            text-align: center;
+            font-size: 16px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            text-decoration: none;
+            animation: glowing-border 2s infinite;
+        }
+
+        @keyframes glowing-border {
+            0% { box-shadow: 0 0 5px #ff0000; }
+            25% { box-shadow: 0 0 5px #00ff00; }
+            50% { box-shadow: 0 0 5px #0000ff; }
+            75% { box-shadow: 0 0 5px #ff00ff; }
+            100% { box-shadow: 0 0 5px #ff0000; }
+        }
+
+        .file-and-submit {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .file-and-submit .button {
+            margin-right: 10px;
+        }
+
+        footer {
+            text-align: center;
+            background-color: #333;
+            color: #fff;
+            padding: 10px;
+            font-size: 16px;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            z-index: 1;
+        }
+
+        hr {
+            width: 80%;
+            margin: 20px auto;
+        }
+    </style>
+    <title>Malware Detection Web Application</title>
+</head>
+<body>
+    <div id="particles-js"></div>
+
+    <nav class="navbar">
+        <h1>Malware Detection Web Application</h1>
+    </nav>
+
+    <div class="logo">
+        <img src="{{ url_for('static', filename='logo.PNG') }}" alt="Your Logo">
+    </div>
+
+    <div class="page-content">
+        <hr>
+        <div class="upload-form">
+            <h1>Upload an APK file for Malware Detection</h1>
+            <form method="POST" action="/detect_malware" enctype="multipart/form-data">
+                <div class="file-and-submit">
+                    <input type="file" name="file" accept=".apk" class="button">
+                    <input type="submit" value="Detect Malware" class="button">
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer>
+        Made by: Hamza Jamil
+    </footer>
+
+    <script src="{{ url_for('static', filename='particles.js') }}"></script>
+    <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>
