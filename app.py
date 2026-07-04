@@ -10,7 +10,6 @@ from gevent.pywsgi import WSGIServer
 from datetime import datetime
 import collections
 import json
-
 app = Flask(__name__)
 
 # Load the pre-trained Random Forest model
@@ -142,7 +141,6 @@ def detect_malware():
             # Debugging
             print("Permissions:", permissions)
             print("Counts:", counts)
-            
             malware_status_message = "Based on these permissions, the file is classified as " + readable_prediction
 
             return render_template('result.html', result=readable_prediction,
