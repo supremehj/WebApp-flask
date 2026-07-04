@@ -167,4 +167,6 @@ def debug():
     return f"Static files: {static_files}<br>Templates: {templates_files}"
 
 if __name__ == '__main__':
-    app.run(use_reloader=False, debug=True)
+    # Get port from environment variable for Render
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)
