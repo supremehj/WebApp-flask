@@ -18,6 +18,7 @@
             color: #fff;
             padding: 10px;
             text-align: center;
+            z-index: 1000;
         }
 
         .navbar h1 {
@@ -28,6 +29,8 @@
             padding: 20px;
             text-align: center;
             margin-top: 70px; /* Adjust the margin as needed */
+            position: relative;
+            z-index: 1;
         }
 
         h1 {
@@ -37,6 +40,14 @@
         .result {
             font-size: 24px;
             margin-top: 20px;
+        }
+
+        .result-malware {
+            color: #ff4444;
+        }
+
+        .result-benign {
+            color: #4CAF50;
         }
 
         .button {
@@ -81,6 +92,7 @@
             position: fixed;
             bottom: 0;
             width: 100%;
+            z-index: 1000;
         }
 
         .chart-container {
@@ -91,10 +103,38 @@
         }
 
         #particles-js {
-            position: absolute;
+            position: fixed;
             width: 100%;
             height: 100%;
-            z-index: -1; /* Set z-index to -1 to place it behind other elements */
+            top: 0;
+            left: 0;
+            z-index: 0;
+        }
+
+        .permissions-list {
+            max-height: 300px;
+            overflow-y: auto;
+            margin: 10px 0;
+        }
+
+        .permissions-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .permissions-list th, .permissions-list td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+
+        .permissions-list th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .permissions-list tr:nth-child(even) {
+            background-color: #f2f2f2;
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -110,17 +150,38 @@
     <div class="result-content">
         <h1>Malware Detection Result</h1>
         <div class="result">
-            <p>The APK file is classified as: {{ result }}</p>
+            <p>The APK file is classified as: <span class="{% if result == 'Malware' %}result-malware{% else %}result-benign{% endif %}">{{ result }}</span></p>
         </div>
 
         <a href="/" class="button">Search for a New File</a>
         <button onclick="toggleDetails()" class="button">See Details</button>
 
         <div id="detailsSection" class="details-section">
-            <p>Time of Upload: {{ upload_time }}</p>
-            <p>Name of APK File: {{ apk_name }}</p>
-            <p>Permissions Extracted: {{ permissions }}</p>
-            <p>{{ malware_status_message }}</p>
+            <p><strong>Time of Upload:</strong> {{ upload_time }}</p>
+            <p><strong>Name of APK File:</strong> {{ apk_name }}</p>
+            <p><strong>Permissions Extracted:</strong> {{ permissions_count }} permissions found</p>
+            <p><strong>{{ malware_status_message }}</strong></p>
+
+            <!-- Permissions Table -->
+            <div class="permissions-list">
+                <h3>Extracted Permissions</h3>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Permission Name</th>
+                            <th>Count</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for i in range(permissions|length) %}
+                        <tr>
+                            <td>{{ permissions[i] }}</td>
+                            <td>{{ permission_counts[i] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
 
             <!-- Pie Chart for Permissions -->
             <div class="chart-container">
@@ -144,32 +205,69 @@
         }
 
         // JavaScript to render a pie chart using Chart.js
-        var ctx = document.getElementById('permissionsPieChart').getContext('2d');
-        var permissionsPieChart = new Chart(ctx, {
-            type: 'pie',
-            data: {
-                labels: {{ permissions | tojson }}, // Replace with your permissions data
-                datasets: [{
-                    label: 'Permission Usage',
-                    data: {{ permission_counts | tojson }}, // Replace with your permission counts data
-                    backgroundColor: [
-                        'rgba(255, 99, 132, 0.5)',
-                        'rgba(54, 162, 235, 0.5)',
-                        // ... add more colors as needed
-                    ],
-                    borderWidth: 1
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false
+        document.addEventListener('DOMContentLoaded', function() {
+            var ctx = document.getElementById('permissionsPieChart');
+            if (ctx) {
+                var permissionsData = {{ permissions | tojson }};
+                var countsData = {{ permission_counts | tojson }};
+                
+                // Generate random colors for each permission
+                var colors = [];
+                for (var i = 0; i < permissionsData.length; i++) {
+                    colors.push('rgba(' + Math.floor(Math.random() * 255) + ',' + 
+                                Math.floor(Math.random() * 255) + ',' + 
+                                Math.floor(Math.random() * 255) + ', 0.5)');
+                }
+
+                new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: permissionsData,
+                        datasets: [{
+                            label: 'Permission Usage',
+                            data: countsData,
+                            backgroundColor: colors,
+                            borderWidth: 1
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    color: '#fff'
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        });
+
+        // Initialize particles
+        document.addEventListener('DOMContentLoaded', function() {
+            if (typeof particlesJS !== 'undefined') {
+                particlesJS('particles-js', {
+                    particles: {
+                        number: { value: 80, density: { enable: true, value_area: 800 } },
+                        color: { value: '#ffffff' },
+                        shape: { type: 'circle' },
+                        opacity: { value: 0.5, random: false },
+                        size: { value: 5, random: true },
+                        line_linked: { enable: true, distance: 150, color: '#ffffff', opacity: 0.4, width: 1 },
+                        move: { enable: true, speed: 6, direction: 'none', random: false, straight: false, out_mode: 'out' }
+                    },
+                    interactivity: {
+                        detect_on: 'canvas',
+                        events: { onhover: { enable: true, mode: 'repulse' }, onclick: { enable: true, mode: 'push' }, resize: true },
+                        modes: { repulse: { distance: 200 }, push: { particles_nb: 4 } }
+                    },
+                    retina_detect: true
+                });
             }
         });
     </script>
-
-    <!-- Include Particle.js script files here -->
-    <script src="{{ url_for('static', filename='particles.js') }}"></script>
-
-    <script src="{{ url_for('static', filename='app.js') }}"></script>
 </body>
 </html>
