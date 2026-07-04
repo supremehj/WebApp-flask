@@ -10,6 +10,7 @@ from gevent.pywsgi import WSGIServer
 from datetime import datetime
 import collections
 import json
+
 app = Flask(__name__)
 
 # Load the pre-trained Random Forest model
@@ -65,7 +66,6 @@ def extract_features_from_apk(apk_file_path):
     except Exception as e:
         print(f"Error extracting features: {e}")
         return None,[]
-
 
 def save_features_to_excel(features, excel_file_path, num_cols=45):
     try:
@@ -124,10 +124,13 @@ def detect_malware():
         apk_path = os.path.join(app.config['UPLOAD_FOLDER'], filename)
         apk_file.save(apk_path)
 
-    # Extract features and predict malware
+        # Extract features and predict malware
         features, extracted_permissions = extract_features_from_apk(apk_path)
+        
         if features is not None:
             prediction = predict_malware(features)
+        else:
+            return render_template('index.html', error="Error extracting features from APK")
 
         if prediction is not None:
             readable_prediction = "Malware" if prediction == 'S' else "Benign"
@@ -138,18 +141,30 @@ def detect_malware():
             permission_counts = collections.Counter(extracted_permissions)
             permissions = list(permission_counts.keys())
             counts = list(permission_counts.values())
+            
             # Debugging
             print("Permissions:", permissions)
             print("Counts:", counts)
+            
             malware_status_message = "Based on these permissions, the file is classified as " + readable_prediction
 
-            return render_template('result.html', result=readable_prediction,
-                                   upload_time=upload_time, apk_name=apk_name, 
-                                   permissions=json.dumps(permissions), 
-                                   permission_counts=json.dumps(counts),
+            return render_template('result.html', 
+                                   result=readable_prediction,
+                                   upload_time=upload_time, 
+                                   apk_name=apk_name, 
+                                   permissions=permissions,  # Send as list, not JSON
+                                   permission_counts=counts,  # Send as list, not JSON
+                                   permissions_count=len(permissions),
                                    malware_status_message=malware_status_message)
         
-    return jsonify({"error": "Invalid file or error in processing"})
+    return render_template('index.html', error="Invalid file or error in processing")
+
+@app.route('/debug')
+def debug():
+    import os
+    static_files = os.listdir('static') if os.path.exists('static') else []
+    templates_files = os.listdir('templates') if os.path.exists('templates') else []
+    return f"Static files: {static_files}<br>Templates: {templates_files}"
 
 if __name__ == '__main__':
     app.run(use_reloader=False, debug=True)
